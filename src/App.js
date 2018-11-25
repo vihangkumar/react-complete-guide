@@ -10,23 +10,12 @@ class App extends Component {
       {name: 'Manu', age: 29},
       {name: 'Stephani', age: 26}
     ], 
-    otherState: 'some other Value'
+    otherState: 'some other Value',
+    showPersons: false
 
   }
 
-  switchNameHandler = (newName) => {
-
-     // console.log('Was clicked')
-     //dont do this this.state.persons[0].name = 'Max Millian'
-
-     this.setState({
-      persons: [
-        {name: newName, age: 28},
-        {name: 'Manu', age: 29},
-        {name: 'Stephani', age: 25}
-      ]
-     })
-  }
+  
 
 
   nameChangeHandler = (event) => {
@@ -41,14 +30,53 @@ class App extends Component {
 
   }
 
+  togglePersonsHandler = () => {
+      const doesShow = this.state.showPersons;
+      this.setState({showPersons: !doesShow});
+
+  }
+
+  deletePersonsHandler = (personIndex) => {
+    const persons = this.state.persons; 
+    persons.splice(personIndex, 1); 
+    this.setState({persons: persons}); 
+
+  }
+
+
+
   render() {
+
       const style = {
         backgroundColor: 'white', 
         font: 'inherit', 
         border: '1px solid blue', 
         padding: '8px',
         cursor: 'pointer' 
-      }; 
+       }; 
+
+      let persons = null
+
+      if(this.state.showPersons){
+
+        persons = (
+
+          <div>
+
+            {this.state.persons.map( (person, index) =>{
+                return <Person
+                    click={() => this.deletePersonsHandler(index)}
+                    name= {person.name}
+                    age={person.age}
+                    />
+
+            })}
+          </div> 
+
+        );
+
+      }
+
 
     return (
       <div className="App">
@@ -56,22 +84,12 @@ class App extends Component {
          <p>This is really working!</p>
          <button 
          style={style}
-         onClick={() => this.switchNameHandler('Maximilian!!')}>Switch Name</button>
+      
+        onClick={this.togglePersonsHandler}>Toggle Persons</button>
 
-         <Person 
-            name={this.state.persons[0].name} 
-            age={this.state.persons[0].age}/>
-          
-         <Person 
-            name={this.state.persons[1].name} 
-            age={this.state.persons[1].age}
-            click={this.switchNameHandler.bind(this, 'Max!!')}
-            changed={this.nameChangeHandler}
-            >My Hobbies: Racing
-          </Person>
-         <Person 
-            name={this.state.persons[2].name} 
-            age={this.state.persons[2].age}/>
+         
+         {persons}
+        
 
       </div>
 
