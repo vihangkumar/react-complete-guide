@@ -1,32 +1,37 @@
 import React, { Component } from 'react';
 import './App.css';
 import Person from './Person/Person'
+import Radium, {StyleRoot} from 'radium'
+
 
 class App extends Component {
 
   state = {
     persons: [
-      {name: 'Max', age: 28},
-      {name: 'Manu', age: 29},
-      {name: 'Stephani', age: 26}
+      {id: 'sdfsdfs', name: 'Max', age: 28},
+      {id: 'xcvfsdf', name: 'Manu', age: 29},
+      {id: 'bvxvxcv', name: 'Stephani', age: 26}
     ], 
     otherState: 'some other Value',
     showPersons: false
 
   }
 
-  
+  nameChangeHandler = (event, id) => {
 
+    const personIndex = this.state.persons.findIndex(p =>{
+        return p.id === id; 
+    }); 
 
-  nameChangeHandler = (event) => {
-      
-     this.setState({
-      persons: [
-        {name: 'Max', age: 28},
-        {name:  event.target.value, age: 29},
-        {name: 'Stephani', age: 26}
-      ]
-     })
+      const person = {...this.state.persons[personIndex] }; 
+      //const person = Object.assign({}, this.state.persons[personIndex]); 
+      person.name = event.target.value; 
+
+      const persons = [...this.state.persons]; 
+      persons[personIndex] = person; 
+
+      this.setState({persons: persons})
+     
 
   }
 
@@ -37,7 +42,8 @@ class App extends Component {
   }
 
   deletePersonsHandler = (personIndex) => {
-    const persons = this.state.persons; 
+    //const persons = this.state.persons.slice(); 
+    const persons = [...this.state.persons]; 
     persons.splice(personIndex, 1); 
     this.setState({persons: persons}); 
 
@@ -48,11 +54,16 @@ class App extends Component {
   render() {
 
       const style = {
-        backgroundColor: 'white', 
+        backgroundColor: 'green', 
+        color: 'white', 
         font: 'inherit', 
         border: '1px solid blue', 
         padding: '8px',
-        cursor: 'pointer' 
+        cursor: 'pointer',
+        ':hover': {
+          backgroundColor: 'lightgreen',
+          color: 'black'
+      }
        }; 
 
       let persons = null
@@ -68,6 +79,8 @@ class App extends Component {
                     click={() => this.deletePersonsHandler(index)}
                     name= {person.name}
                     age={person.age}
+                    key={person.id}
+                    changed={(event)=> this.nameChangeHandler(event, person.id)}
                     />
 
             })}
@@ -75,23 +88,37 @@ class App extends Component {
 
         );
 
+        style.backgroundColor = 'red'; 
+        style[':hover'] = {
+          backgroundColor: 'salmon',
+          color: 'black'
+        }
+
       }
 
+      let classes = []; 
+
+      if(this.state.persons.length<= 2){
+        classes.push('red'); // classes = ['red']
+      }
+      if(this.state.persons.length <= 1){
+        classes.push('red', 'bold'); // classes = ['red', 'bold']
+      }
 
     return (
+      <StyleRoot>
       <div className="App">
         <h1>Hi, I'm a React App</h1>
-         <p>This is really working!</p>
+         <p className={classes.join(' ')}>This is really working!</p>
          <button 
-         style={style}
-      
-        onClick={this.togglePersonsHandler}>Toggle Persons</button>
-
-         
-         {persons}
+         style={style}     
+         onClick={this.togglePersonsHandler}>Toggle Persons</button>
+        
+        {persons}
         
 
       </div>
+      </StyleRoot>
 
     );
 
@@ -101,4 +128,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Radium(App);
